@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yml_catalog date="2024-06-01T10:00:00+03:00">
+  <shop>
+    <name>Тестовый магазин</name>
+    <company>ООО «Пример»</company>
+    <url>https://example.com</url>
+    <currencies>
+      <currency id="RUR" rate="1"/>
+    </currencies>
+    <categories>
+      <category id="1">Электроника</category>
+      <category id="2" parentId="1">Телефоны</category>
+      <category id="3" parentId="2">Смартфоны</category>
+      <category id="4">Книги</category>
+      <category id="5">Туры</category>
+      <category id="6">Билеты</category>
+    </categories>
+    <delivery-options>
+      <option cost="200" days="1"/>
+    </delivery-options>
+    <offers>
+      <offer id="A1" available="true">
+        <url>https://example.com/a1</url>
+        <price>19990</price>
+        <oldprice>24990</oldprice>
+        <currencyId>RUR</currencyId>
+        <categoryId>3</categoryId>
+        <picture>https://example.com/a1-1.jpg</picture>
+        <picture>https://example.com/a1-2.jpg</picture>
+        <name>Телефон Проба</name>
+        <vendor>Ромашка</vendor>
+        <description>Простое описание</description>
+        <param name="Цвет">чёрный</param>
+        <param name="Память" unit="ГБ">128</param>
+        <barcode>111</barcode>
+        <barcode>222</barcode>
+      </offer>
+      <offer id="B2" type="vendor.model" available="false" group_id="g1">
+        <url>https://example.com/b2</url>
+        <price from="true">500</price>
+        <currencyId>RUR</currencyId>
+        <categoryId>1</categoryId>
+        <picture>https://example.com/b2.jpg</picture>
+        <typePrefix>Смартфон</typePrefix>
+        <vendor>Vendor</vendor>
+        <model>Model X</model>
+        <description>Описание с "кавычками" и
+переносом, запятой, и ; точкой с запятой.</description>
+      </offer>
+      <offer id="C3" type="book" available="true">
+        <url>https://example.com/c3</url>
+        <price>300</price>
+        <currencyId>RUR</currencyId>
+        <categoryId>4</categoryId>
+        <name>Война и мир</name>
+        <author>Толстой</author>
+        <publisher>Азбука</publisher>
+        <year>2020</year>
+        <ISBN>978-5-00-000000-0</ISBN>
+        <language>rus</language>
+        <binding>hard</binding>
+        <page_extent>1000</page_extent>
+      </offer>
+      <offer id="D4" type="tour" available="true">
+        <url>https://example.com/d4</url>
+        <price>45000</price>
+        <currencyId>RUR</currencyId>
+        <categoryId>5</categoryId>
+        <name>Тур в Казань</name>
+        <country>Россия</country>
+        <region>Татарстан</region>
+        <days>3</days>
+        <date>2024-07-01</date>
+        <date>2024-07-15</date>
+        <dataTour>2024-07-01</dataTour>
+        <hotel_stars>4</hotel_stars>
+        <meal>BB</meal>
+        <included>перелёт</included>
+        <transport>авиа</transport>
+      </offer>
+      <offer id="E5" available="true">
+        <price>1500</price>
+        <currencyId>RUR</currencyId>
+        <categoryId>2</categoryId>
+        <name>Чехол</name>
+        <delivery>true</delivery>
+        <pickup>false</pickup>
+        <store>true</store>
+        <delivery-options>
+          <option cost="300" days="1" order-before="18"/>
+          <option cost="0" days="3"/>
+        </delivery-options>
+        <pickup-options>
+          <option cost="0" days="2"/>
+        </pickup-options>
+        <outlets>
+          <outlet id="10" instock="4"/>
+        </outlets>
+        <age unit="year">18</age>
+        <weight>0.2</weight>
+        <dimensions>10/20/3</dimensions>
+        <condition type="preowned">
+          <quality>excellent</quality>
+          <reason>царапина на корпусе</reason>
+        </condition>
+        <video>https://example.com/e5.mp4</video>
+        <collectionId>7</collectionId>
+        <collectionId>8</collectionId>
+      </offer>
+      <offer id="F6" type="event-ticket" available="true">
+        <url>https://example.com/f6</url>
+        <price>2500</price>
+        <currencyId>RUR</currencyId>
+        <categoryId>6</categoryId>
+        <name>Спектакль</name>
+        <place>Театр</place>
+        <hall>Большой</hall>
+        <hall_part>партер</hall_part>
+        <date>2024-08-01 19:00</date>
+        <is_premiere>false</is_premiere>
+        <is_kids>0</is_kids>
+      </offer>
+    </offers>
+  </shop>
+</yml_catalog>

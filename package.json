@@ -1,0 +1,55 @@
+{
+  "name": "yml2csv",
+  "version": "2.0.0",
+  "description": "Конвертер Yandex YML (Яндекс Маркет, Директ, маркетплейсы) в CSV",
+  "type": "module",
+  "bin": {
+    "yml2csv": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "yml2csv": "bun src/cli.ts",
+    "test": "bun test",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p web/tsconfig.json --noEmit",
+    "build:lib": "tsc -p tsconfig.json && chmod +x dist/cli.js",
+    "build:web": "vite build --config web/vite.config.ts",
+    "build": "bun run build:lib && bun run build:web",
+    "dev": "vite --config web/vite.config.ts",
+    "prepublishOnly": "bun run build:lib"
+  },
+  "keywords": [
+    "yml",
+    "yandex",
+    "market",
+    "direct",
+    "csv",
+    "yml2csv"
+  ],
+  "author": "AlexStep",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexstep/yml2csv.git"
+  },
+  "engines": {
+    "bun": ">=1.1.0"
+  },
+  "dependencies": {
+    "saxes": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0"
+  },
+  "sideEffects": false
+}
