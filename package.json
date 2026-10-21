@@ -40,6 +40,9 @@
     "type": "git",
     "url": "git+https://github.com/alexstep/yml2csv.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "bun": ">=1.1.0"
   },

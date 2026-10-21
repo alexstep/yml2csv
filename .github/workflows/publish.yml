@@ -1,0 +1,112 @@
+# Публикация yml2csv в npm.
+# Триггер — тег v* (его же создаёт GitHub Release).
+# Имя файла publish.yml: так его нужно указать в Trusted Publisher на npmjs.com.
+# Поле environment в trusted publisher оставить пустым.
+# Для прямой команды npm publish отметить разрешение «npm publish»
+# (с 3 сентября 2026 новая конфигурация по умолчанию разрешает только stage).
+#
+# Первая публикация: пакета ещё нет, trusted publisher настроить нельзя.
+# Пока в секретах репозитория есть NPM_TOKEN, вход идёт по нему.
+# Пустой токен setup-node записывает как настроенный и мешает OIDC,
+# поэтому без секрета эта строка удаляется.
+
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: npm-publish-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'alexstep/yml2csv'
+    runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.4.3
+
+      - name: Сверить тег с version в package.json
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME#v}"
+          pkg="$(node -p "require('./package.json').version")"
+          case "${GITHUB_REF_NAME}" in
+            v*) ;;
+            *)
+              echo "::error::Тег ${GITHUB_REF_NAME} должен быть вида v${pkg}."
+              exit 1
+              ;;
+          esac
+          if [ "$tag" != "$pkg" ]; then
+            echo "::error::Тег ${GITHUB_REF_NAME} не совпадает с package.json ${pkg}. Нужен тег v${pkg}."
+            exit 1
+          fi
+          echo "Публикуем yml2csv@${pkg}"
+
+      - name: Поставить npm 11.5.1 или новее
+        run: |
+          set -euo pipefail
+          npm install -g npm@^11.5.1
+          node <<'NODE'
+          const { execSync } = require('node:child_process')
+          const raw = execSync('npm --version', { encoding: 'utf8' }).trim()
+          const [major, minor, patch] = raw.split('.').map(Number)
+          const ok = major > 11 || (major === 11 && (minor > 5 || (minor === 5 && patch >= 1)))
+          if (!ok) {
+            console.error(`npm ${raw} старше 11.5.1`)
+            process.exit(1)
+          }
+          console.log(`npm ${raw}`)
+          NODE
+
+      - name: Установить зависимости, прогнать тесты и собрать пакет
+        run: |
+          set -euo pipefail
+          bun install --frozen-lockfile
+          bun test
+          bun run build:lib
+          head -1 dist/cli.js | grep -q '^#!/usr/bin/env bun'
+
+      - name: Выбрать вход в npm
+        run: |
+          set -euo pipefail
+          if [ -n "${NODE_AUTH_TOKEN}" ]; then
+            echo "Секрет NPM_TOKEN задан: публикуем по токену."
+            echo "Если trusted publisher уже настроен, npm сначала попробует OIDC и при неудаче вернётся к токену."
+          else
+            echo "Секрета NPM_TOKEN нет: публикуем через Trusted Publishing."
+            npm config delete "//registry.npmjs.org/:_authToken" || true
+            if npm view yml2csv version >/tmp/npm-view.txt 2>/tmp/npm-view.err; then
+              echo "В реестре уже есть yml2csv@$(cat /tmp/npm-view.txt)."
+            else
+              if grep -q E404 /tmp/npm-view.err; then
+                echo "::error::Пакета yml2csv ещё нет на npmjs.com. Trusted publisher нельзя включить до первой публикации. Добавьте секрет NPM_TOKEN и перезапустите этот workflow."
+                exit 1
+              fi
+              echo "::error::Не удалось проверить реестр npm."
+              cat /tmp/npm-view.err
+              exit 1
+            fi
+          fi
+
+      - name: Опубликовать
+        run: npm publish --provenance --access public
