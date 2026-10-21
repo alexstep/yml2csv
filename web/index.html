@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#12382c" />
+    <title>YML в CSV — конвертер Яндекс Маркета</title>
+    <meta
+      name="description"
+      content="Конвертация Yandex YML в CSV в браузере: фиды Яндекс Маркета, Директа и маркетплейсов. Файл не отправляется на сервер."
+    />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta property="og:title" content="YML в CSV" />
+    <meta property="og:description" content="Локальная конвертация Yandex YML в CSV" />
+    <meta property="og:image" content="/meta.png" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <p class="brand">
+          <span>YML</span>
+          <span class="brand-arrow" aria-hidden="true">→</span>
+          <span>CSV</span>
+        </p>
+        <h1>Конвертер фидов Яндекс Маркета</h1>
+        <p class="lede">
+          YML для Маркета, Директа и маркетплейсов превращается в CSV прямо в браузере.
+          Файл никуда не отправляется.
+        </p>
+      </header>
+
+      <main>
+        <section class="card" aria-labelledby="source-title">
+          <h2 id="source-title" class="visually-hidden">Источник фида</h2>
+          <div class="tabs" role="tablist">
+            <button id="tab-file" type="button" role="tab" aria-selected="true" aria-controls="panel-file">Файл</button>
+            <button id="tab-url" type="button" role="tab" aria-selected="false" aria-controls="panel-url">Ссылка</button>
+          </div>
+
+          <div id="panel-file" role="tabpanel">
+            <label class="drop" id="drop">
+              <input id="file" type="file" accept=".xml,.yml,text/xml,application/xml" />
+              <span class="drop-title">Перетащите YML или XML сюда</span>
+              <span class="drop-meta" id="file-name">или выберите файл на диске</span>
+            </label>
+          </div>
+
+          <div id="panel-url" role="tabpanel" hidden>
+            <label class="field" for="url">Ссылка на фид
+              <input id="url" type="url" inputmode="url" placeholder="https://shop.example/feed.yml" autocomplete="url" />
+            </label>
+            <p class="hint">
+              Ссылка сработает, только если сервер разрешает CORS. Иначе сохраните фид и откройте его как файл.
+              Большие фиды удобнее гнать через <code>yml2csv</code> в терминале.
+            </p>
+          </div>
+
+          <div class="options">
+            <label class="field" for="delimiter">Разделитель
+              <select id="delimiter">
+                <option value=",">Запятая</option>
+                <option value=";">Точка с запятой</option>
+              </select>
+            </label>
+            <label class="field" for="encoding">Кодировка фида
+              <select id="encoding">
+                <option value="auto">Авто</option>
+                <option value="utf-8">UTF-8</option>
+                <option value="windows-1251">Windows-1251</option>
+              </select>
+            </label>
+            <label class="check" for="bom">
+              <input id="bom" type="checkbox" />
+              <span>UTF-8 BOM для Excel</span>
+            </label>
+            <label class="field field-wide" for="columns">Колонки
+              <input id="columns" type="text" placeholder="все, или список: id, name, price, category" spellcheck="false" />
+            </label>
+          </div>
+
+          <div class="actions">
+            <button id="convert" class="primary" type="button">Конвертировать</button>
+            <button id="excel" class="ghost" type="button">Для Excel</button>
+            <button id="sample" class="ghost" type="button">Открыть пример</button>
+          </div>
+          <p id="status" class="status" role="status"></p>
+          <p id="error" class="error" role="alert" hidden></p>
+        </section>
+
+        <section class="card" id="result" hidden aria-labelledby="preview-title">
+          <div class="result-head">
+            <div>
+              <h2 id="preview-title">Превью</h2>
+              <p id="summary" class="hint"></p>
+            </div>
+            <button id="download" class="primary" type="button">Скачать CSV</button>
+          </div>
+          <div class="table-wrap">
+            <table id="preview"></table>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <a href="https://yandex.ru/support/marketplace/ru/assortment/auto/yml">Спецификация YML</a>
+        <a href="https://yandex.ru/support/direct/ru/feeds/requirements-yml">YML для Директа</a>
+        <a href="https://github.com/alexstep/yml2csv">Исходный код</a>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
