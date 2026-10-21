@@ -11,22 +11,22 @@ XML читается потоковым SAX-парсером ([saxes](https://gi
 
 ## Командная строка
 
-Нужен [Bun](https://bun.sh). После публикации пакета в npm:
-
-```bash
-bunx yml2csv feed.xml > out.csv
-bunx yml2csv https://shop.example/feed.yml -o out.csv --excel
-bunx yml2csv feed.xml -e windows-1251 -d ';' --bom -o out.csv
-bunx yml2csv feed.xml -c id,name,price,category > short.csv
-curl -fsSL https://shop.example/feed.yml | bunx yml2csv - > out.csv
-```
-
-Из этого репозитория, без публикации:
+Нужен [Bun](https://bun.sh). Из клона репозитория:
 
 ```bash
 bun install
 bun src/cli.ts examples/shop.xml > out.csv
-bun src/cli.ts examples/shop.xml --excel -o out.csv
+bun src/cli.ts examples/shop.xml --excel -o shop.csv
+bun src/cli.ts examples/shop.xml -c id,name,price,category
+bun src/cli.ts - < examples/shop.xml > out.csv
+```
+
+После публикации пакета в npm те же команды доступны без клона. Файл фида — свой, локальный:
+
+```bash
+bunx yml2csv feed.xml > out.csv
+bunx yml2csv feed.xml --excel -o out.csv
+bunx yml2csv feed.xml -e windows-1251 -c id,name,price,category
 ```
 
 | Флаг | Что делает |
@@ -99,4 +99,18 @@ bun run build
 
 Стек: Bun, TypeScript, Vite. Единственная runtime-зависимость — `saxes`.
 Ядро — `src/`, CLI — `src/cli.ts`, страница — `web/`.
-В npm пакет готовится через `bin`, `files` и `exports` в `package.json`; публикация отсюда не запускается.
+В npm уходят `dist/` и этот README (`files`, `bin`, `exports` в `package.json`).
+
+## Выпуск версии
+
+Версия живёт в `package.json`. Тег должен с ней совпадать: для `2.0.0` это `v2.0.0`.
+
+```bash
+# version в package.json уже обновлён и закоммичен в master
+git tag v2.0.0
+git push origin v2.0.0
+```
+
+Тот же тег создаёт GitHub Release. Workflow `.github/workflows/publish.yml` прогоняет тесты, собирает пакет на Bun и выполняет `npm publish --provenance --access public`.
+
+Первый выпуск требует секрет `NPM_TOKEN`: пакет ещё не существует, и trusted publisher на npmjs.com включить некуда. После появления `yml2csv` в реестре публикацию можно перевести на Trusted Publishing и секрет удалить.
